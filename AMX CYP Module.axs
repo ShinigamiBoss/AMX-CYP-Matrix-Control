@@ -1,4 +1,4 @@
-MODULE_NAME='CYP Matrix Module' (dvMatrix, vdvTP)
+MODULE_NAME='AMX CYP Module' (DEV dvMatrix, DEV vdvTP)
 (***********************************************************)
 (***********************************************************)
 (*  FILE_LAST_MODIFIED_ON: 04/04/2006  AT: 11:33:16        *)
@@ -50,7 +50,7 @@ INTEGER InputSwitch = 0
 //Store output to switch
 INTEGER  OutputSwitch = 0
 
-CHAR OutNames[][] = {
+CHAR OutNames[16][256] = {
     {'HDBT_Out A'},
     {'HDBT_Out B'},
     {'HDBT_Out C'},
@@ -66,10 +66,10 @@ CHAR OutNames[][] = {
     {'HDBT_Out O'},
     {'HDBT_Out P'},
     {'HDBT_Out Q'},
-    {'HDBT_Out R'},
+    {'HDBT_Out R'}
 }
 
-CHAR InNames[][] = {
+CHAR InNames[16][256] = {
     {'Slot 1'},
     {'Slot 2'},
     {'Slot 3'},
@@ -133,15 +133,15 @@ DATA_EVENT[dvMatrix]
     }
     COMMAND: 
     {
-        LOCAL_VAR CommandText[]
+        LOCAL_VAR CommandText[256]
         CommandText = DATA.TEXT
 
         if(FIND_STRING(CommandText,IpSetCmd,1))
         {
             REMOVE_STRING(CommandText,IpSetCmd,1)
-            IP_ADDRESS = CommandText
+            MatrixIP = CommandText
             IP_CLIENT_CLOSE(dvMatrix.PORT)
-            IP_CLIENT_OPEN(dvMatrix.PORT,IP_ADDRESS,TelnetPort,IP_TCP)
+            IP_CLIENT_OPEN(dvMatrix.PORT,MatrixIP,TelnetPort,IP_TCP)
             
             
         }
@@ -150,7 +150,7 @@ DATA_EVENT[dvMatrix]
         {
             LOCAL_VAR INTEGER in
             LOCAL_VAR INTEGER out
-            LOCAL_VAR CHAR substr[]
+            LOCAL_VAR CHAR substr[256]
 
             REMOVE_STRING(CommandText, RouteCmd, 1)
 
@@ -167,7 +167,7 @@ DATA_EVENT[dvMatrix]
     }
     STRING:
     {
-        LOCAL_VAR CHAR Response[]
+        LOCAL_VAR CHAR Response[256]
 
         Response = DATA.TEXT
     }
@@ -181,7 +181,7 @@ DATA_EVENT[dvMatrix]
 (* X-Series masters, changing variables in the DEFINE_PROGRAM    *)
 (* section of code can negatively impact program performance.    *)
 (*                                                               *)
-(* See “Differences in DEFINE_PROGRAM Program Execution” section *)
+(* See â€œDifferences in DEFINE_PROGRAM Program Executionâ€ section *)
 (* of the NX-Series Controllers WebConsole & Programming Guide   *)
 (* for additional and alternate coding methodologies.            *)
 (*****************************************************************)
