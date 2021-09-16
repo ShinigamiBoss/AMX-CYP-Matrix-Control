@@ -167,7 +167,9 @@ DATA_EVENT[dvMatrix]
     }
     STRING:
     {
-        
+        LOCAL_VAR CHAR Response[]
+
+        Response = DATA.TEXT
     }
 }
 
