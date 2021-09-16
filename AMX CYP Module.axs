@@ -163,6 +163,7 @@ DEFINE_MUTUALLY_EXCLUSIVE
 (***********************************************************)
 DEFINE_START
 
+
 DEFINE_FUNCTION RouteSignal (INTEGER in, INTEGER Out)
 {
     if (ConnectionStatus == 0)
@@ -337,6 +338,8 @@ DATA_EVENT[dvMatrix]
         ConnectionStatus = 0
     }
 }
+
+
 
 (*****************************************************************)
 (*                                                               *)
