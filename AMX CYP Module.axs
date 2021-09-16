@@ -24,7 +24,9 @@ DEFINE_CONSTANT
 CHAR IpSetCmd[] = 'IP_ADDRESS-'
 CHAR RouteCmd[] = 'ROUTE-'
 CHAR InNameSetCmd[] = 'SET_IN_NAME-'
-CHAR OutNameSetCmd[] = 'SET_IN_NAME-'
+CHAR OutNameSetCmd[] = 'SET_OUT_NAME-'
+CHAR GuiInNameSetCmd[] = 'SET_GUI_IN_NAME-'
+CHAR GuiOutNameSetCmd[] = 'SET_GUI_OUT_NAME-'
 
 
 //Telnet Commands
@@ -73,6 +75,47 @@ PERSISTENT CHAR OutNames[16][256] = {
 }
 
 PERSISTENT CHAR InNames[16][256] = {
+    {'Slot 1'},
+    {'Slot 2'},
+    {'Slot 3'},
+    {'Slot 4'},
+    {'Slot 5'},
+    {'Slot 6'},
+    {'Slot 7'},
+    {'Slot 8'},
+    {'Slot 9'},
+    {'Slot 10'},
+    {'Slot 11'},
+    {'Slot 12'},
+    {'Slot 13'},
+    {'Slot 14'},
+    {'Slot 15'},
+    {'Slot 16'}
+
+}
+
+//Name sent to the User interface
+PERSISTENT CHAR GuiOutNames[16][256] = {
+    {'HDBT_Out A'},
+    {'HDBT_Out B'},
+    {'HDBT_Out C'},
+    {'HDBT_Out D'},
+    {'HDBT_Out E'},
+    {'HDBT_Out F'},
+    {'HDBT_Out G'},
+    {'HDBT_Out H'},
+    {'HDBT_Out I'},
+    {'HDBT_Out L'},
+    {'HDBT_Out M'},
+    {'HDBT_Out N'},
+    {'HDBT_Out O'},
+    {'HDBT_Out P'},
+    {'HDBT_Out Q'},
+    {'HDBT_Out R'}
+}
+
+//Name sent to the User interface
+PERSISTENT CHAR GuiInNames[16][256] = {
     {'Slot 1'},
     {'Slot 2'},
     {'Slot 3'},
