@@ -23,6 +23,9 @@ DEFINE_CONSTANT
 //Commands variables
 CHAR IpSetCmd[] = 'IP_ADDRESS-'
 CHAR RouteCmd[] = 'ROUTE-'
+CHAR InNameSetCmd[] = 'SET_IN_NAME-'
+CHAR OutNameSetCmd[] = 'SET_IN_NAME-'
+
 
 //Telnet Commands
 CHAR RouteZoneTel[] = 'ZoneAvPair '
@@ -146,6 +149,7 @@ DATA_EVENT[vdvMatrix]
         LOCAL_VAR CommandText[256]
         CommandText = DATA.TEXT
 
+        //IP Address setup and connection
         if(FIND_STRING(CommandText,IpSetCmd,1))
         {
             REMOVE_STRING(CommandText,IpSetCmd,1)
@@ -161,6 +165,7 @@ DATA_EVENT[vdvMatrix]
             
         }
 
+        //Route command
         if(FIND_STRING(CommandText,RouteCmd,1))
         {
             LOCAL_VAR INTEGER in
@@ -175,6 +180,29 @@ DATA_EVENT[vdvMatrix]
             out = ATOI(CommandText)
             RouteSignal(in,out)
         }
+        
+        //Set input name, please note that it will affect the routing!!!
+        if(FIND_STRING(CommandText, InNameSetCmd,1))
+        {
+            LOCAL_VAR  INTEGER Index
+            REMOVE_STRING(CommandText,InNameSetCmd,1)
+
+            index = REMOVE_STRING(CommandText,',',1)
+
+            InNames[index] = CommandText
+        }
+
+        //Set output name, please note that it will affect the routing!!!
+        if(FIND_STRING(CommandText, OutNameSetCmd,1))
+        {
+            LOCAL_VAR  INTEGER Index
+            REMOVE_STRING(CommandText,OutNameSetCmd,1)
+
+            index = REMOVE_STRING(CommandText,',',1)
+
+            OutNames[index] = CommandText
+        }
+
         
 
     }
