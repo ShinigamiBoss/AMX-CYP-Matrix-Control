@@ -50,7 +50,7 @@ INTEGER InputSwitch = 0
 //Store output to switch
 INTEGER  OutputSwitch = 0
 
-CHAR OutNames[16][256] = {
+PERSISTENT CHAR OutNames[16][256] = {
     {'HDBT_Out A'},
     {'HDBT_Out B'},
     {'HDBT_Out C'},
@@ -69,7 +69,7 @@ CHAR OutNames[16][256] = {
     {'HDBT_Out R'}
 }
 
-CHAR InNames[16][256] = {
+PERSISTENT CHAR InNames[16][256] = {
     {'Slot 1'},
     {'Slot 2'},
     {'Slot 3'},
