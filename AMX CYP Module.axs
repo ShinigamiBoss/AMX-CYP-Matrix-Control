@@ -27,11 +27,16 @@ CHAR InNameSetCmd[] = 'SET_IN_NAME-'
 CHAR OutNameSetCmd[] = 'SET_OUT_NAME-'
 CHAR GuiInNameSetCmd[] = 'SET_GUI_IN_NAME-'
 CHAR GuiOutNameSetCmd[] = 'SET_GUI_OUT_NAME-'
-
+CHAR SetGUIStateCmd[] = 'GUI_STATES-'
+CHAR RefreshGUI[] = 'REFRESH_GUI'
 
 //Telnet Commands
 CHAR RouteZoneTel[] = 'ZoneAvPair '
 CHAR LoadTel[] = 'Load'
+
+//GUI Button channels
+INTEGER InBtn[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+INTEGER OutBtn[] = {101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116} 
 
 //Constants
 INTEGER TelnetPort = 23
@@ -50,11 +55,10 @@ DEFINE_VARIABLE
 
 //Store IP Address
 CHAR MatrixIP[16] = '192.168.1.1'
-//Store input to switch
-INTEGER InputSwitch = 0
-//Store output to switch
-INTEGER  OutputSwitch = 0
 
+PERSISTENT INTEGER GUIState = 1
+
+//Route output names
 PERSISTENT CHAR OutNames[16][256] = {
     {'HDBT_Out A'},
     {'HDBT_Out B'},
@@ -74,6 +78,7 @@ PERSISTENT CHAR OutNames[16][256] = {
     {'HDBT_Out R'}
 }
 
+//Route input names
 PERSISTENT CHAR InNames[16][256] = {
     {'Slot 1'},
     {'Slot 2'},
@@ -138,6 +143,8 @@ PERSISTENT CHAR GuiInNames[16][256] = {
 //Keep track of the network connection
 INTEGER ConnectionStatus = 0
 
+//Used for loopa
+INTEGER x=0
 (***********************************************************)
 (*               LATCHING DEFINITIONS GO BELOW             *)
 (***********************************************************)
@@ -172,6 +179,18 @@ DEFINE_FUNCTION RouteSignal (INTEGER in, INTEGER Out)
     }
 }
 
+DEFINE_FUNCTION UpdateGUINames()
+{
+    FOR (x = 1; x <= 16; x++)
+    {
+        SEND_COMMAND vdvTP,"'^TXT-',ITOA(x),',',ITOA(GUIState),',',GuiInNames[x]" 
+    }
+    FOR (x = 100; x <= 116; x++)
+    {
+        SEND_COMMAND vdvTP,"'^TXT-',ITOA(x),',',ITOA(GUIState),',',GuiOutNames[x]" 
+    }
+}
+
 (***********************************************************)
 (*                THE EVENTS GO BELOW                      *)
 (***********************************************************)
@@ -181,7 +200,7 @@ DATA_EVENT[vdvMatrix]
 {
     ONLINE:
     {
-        
+                
     }
     OFFLINE: 
     {
@@ -205,7 +224,6 @@ DATA_EVENT[vdvMatrix]
 
             IP_CLIENT_OPEN(dvMatrix.PORT,MatrixIP,TelnetPort,IP_TCP)
             
-            
         }
 
         //Route command
@@ -221,7 +239,13 @@ DATA_EVENT[vdvMatrix]
 
             in = ATOI(substr)
             out = ATOI(CommandText)
-            RouteSignal(in,out)
+            if (in > 0 and in <= 16)
+            {
+                if(out > 0 and out <= 16)
+                {
+                    RouteSignal(in,out)
+                }
+            }
         }
         
         //Set input name, please note that it will affect the routing!!!
@@ -231,8 +255,10 @@ DATA_EVENT[vdvMatrix]
             REMOVE_STRING(CommandText,InNameSetCmd,1)
 
             index = REMOVE_STRING(CommandText,',',1)
-
-            InNames[index] = CommandText
+            if(index > 0 and index <= 16)
+            {
+                InNames[index] = CommandText
+            }
         }
 
         //Set output name, please note that it will affect the routing!!!
@@ -242,18 +268,62 @@ DATA_EVENT[vdvMatrix]
             REMOVE_STRING(CommandText,OutNameSetCmd,1)
 
             index = REMOVE_STRING(CommandText,',',1)
-
-            OutNames[index] = CommandText
+            if(index > 0 and index <= 16)
+            {
+                OutNames[index] = CommandText
+            }
         }
 
+        //Set the GUI Input Names
+        if(FIND_STRING(CommandText,GuiInNameSetCmd,1))
+        {
+            LOCAL_VAR INTEGER index
+            REMOVE_STRING(CommandText,GuiInNameSetCmd,1)
+
+            index = REMOVE_STRING(CommandText,',',1)
+            if (index > 0 and index <=16)
+            {
+                GuiInNames[index] = CommandText
+            }
+            UpdateGUINames()
+        }
+
+        //Set the GUI Output Names
+        if(FIND_STRING(CommandText,GuiInNameSetCmd,1))
+        {
+            LOCAL_VAR INTEGER index
+            REMOVE_STRING(CommandText,GuiInNameSetCmd,1)
+
+            index = REMOVE_STRING(CommandText,',',1)
+            if (index > 0 and index <=16)
+            {
+                GuiOutNames[index] = CommandText
+            }
+            UpdateGUINames()
+        }
+
+        //Set the panel button state for GUI names:
+        //0: All States
+        //1: Off state
+        //2: On state
+        //1-256 for multi state button
+        if(FIND_STRING(CommandText,SetGUIStateCmd,1))
+        {
+            LOCAL_VAR INTEGER State
+            FIND_STRING(CommandText,SetGUIStateCmd,1)
+            State = ATOI(CommandText) 
+            if(state <= 256)
+            {
+                GUIState = State
+            }
+        }
+
+        if(FIND_STRING(CommandText,RefreshGUI,1))
+        {
+            UpdateGUINames()
+        }
         
 
-    }
-    STRING:
-    {
-        LOCAL_VAR CHAR Response[256]
-
-        Response = DATA.TEXT
     }
 }
 
