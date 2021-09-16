@@ -1,7 +1,7 @@
 MODULE_NAME='AMX CYP Module' (DEV vdvMatrix, DEV dvMatrix, DEV vdvTP)
 (***********************************************************)
 (***********************************************************)
-(*  FILE_LAST_MODIFIED_ON: 16/09/2021                      *)
+(*  FILE_LAST_MODIFIED_ON: 04/04/2006  AT: 11:33:16        *)
 (***********************************************************)
 (* System Type : NetLinx                                   *)
 (***********************************************************)
@@ -89,6 +89,8 @@ CHAR InNames[16][256] = {
 
 }
 
+//Keep track of the network connection
+INTEGER ConnectionStatus = 0
 
 (***********************************************************)
 (*               LATCHING DEFINITIONS GO BELOW             *)
@@ -113,7 +115,15 @@ DEFINE_START
 
 DEFINE_FUNCTION RouteSignal (INTEGER in, INTEGER Out)
 {
-    SEND_STRING dvMatrix,"RouteZoneTel, OutNames[Out],' ', InNames[In], ' ', LoadTel, Terminator "
+    if (ConnectionStatus == 0)
+    {
+        IP_CLIENT_OPEN(dvMatrix.PORT, MatrixIP, TelnetPort, IP_TCP)
+    }
+    
+    WAIT 5
+    {
+        SEND_STRING dvMatrix,"RouteZoneTel, OutNames[Out],' ', InNames[In], ' ', LoadTel, Terminator "
+    }
 }
 
 (***********************************************************)
@@ -125,11 +135,11 @@ DATA_EVENT[vdvMatrix]
 {
     ONLINE:
     {
-        IP_CLIENT_OPEN(dvMatrix.PORT, MatrixIP, TelnetPort, IP_TCP)
+        
     }
     OFFLINE: 
     {
-        IP_CLIENT_OPEN(dvMatrix.PORT, MatrixIP, TelnetPort, IP_TCP)
+        
     }
     COMMAND: 
     {
@@ -140,7 +150,12 @@ DATA_EVENT[vdvMatrix]
         {
             REMOVE_STRING(CommandText,IpSetCmd,1)
             MatrixIP = CommandText
-            IP_CLIENT_CLOSE(dvMatrix.PORT)
+            
+            if(ConnectionStatus == 1)
+            {
+                IP_CLIENT_CLOSE(dvMatrix.PORT)
+            }
+
             IP_CLIENT_OPEN(dvMatrix.PORT,MatrixIP,TelnetPort,IP_TCP)
             
             
@@ -158,9 +173,7 @@ DATA_EVENT[vdvMatrix]
 
             in = ATOI(substr)
             out = ATOI(CommandText)
-
             RouteSignal(in,out)
-
         }
         
 
@@ -170,6 +183,23 @@ DATA_EVENT[vdvMatrix]
         LOCAL_VAR CHAR Response[256]
 
         Response = DATA.TEXT
+    }
+}
+
+DATA_EVENT[dvMatrix]
+{
+    ONLINE:
+    {
+        ConnectionStatus = 1
+    }
+    OFFLINE: 
+    { 
+        ConnectionStatus = 0
+    }
+    
+    ONERROR:
+    {
+        ConnectionStatus = 0
     }
 }
 
@@ -194,4 +224,3 @@ DEFINE_PROGRAM
 (*         !!!  DO NOT PUT ANY CODE BELOW THIS COMMENT  !!!      *)
 (*                                                               *)
 (*****************************************************************)
-
