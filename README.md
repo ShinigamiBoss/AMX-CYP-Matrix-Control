@@ -5,6 +5,9 @@ This AMX module allow control of the CYP AV Matrix
 ## Module instruction
 
 The use of this module is intended for network control via the CYP telnet port.
+The module assumes that the following channel number are assigned to the GUI buttons:
+1 - 16 for input button
+101 - 116 : for output buttons
 The module supports up to 16 inputs and 16 outputs.
 How setup the module:
 
@@ -19,6 +22,16 @@ The module supports the following commands, the commands must be sent to the vir
 
 1. 'IP_ADDRESS-XXX.XXX.XXX.XXX' : set the IP Address and connect to the device, the parameter XXX.XXX.XXX.XXX is the IP Address of the machine
 2. 'ROUTE-IN,OUT' : the the input to the output, IN: an integer between 1 and 16, OUT: an integer between 1 and 16
+3. 'SET_IN_NAME-INDEX,VALUE' : set the input names for routing purposes, INDEX: integer between 1 and 16, VALUE: the name to assign
+4. 'SET_OUT_NAME-INDEX,VALUE' : set the output names for routing purposes, INDEX: integer between 1 and 16, VALUE: the name to assign
+5. 'SET_GUI_IN_NAME-INDEX,VALUE' : set the name displayed to the GUI of the touch panel, INDEX: integer between 1 and 16, VALUE: the name to assign
+6. 'SET_GUI_OUT_NAME-INDEX,VALUE' : set the name displayed to the GUI of the touch panel, INDEX: integer between 1 and 16, VALUE: the name to assign
+7. 'SetGUIStateCmd' : set the panel button stae for the GUI names, possible values are:
+   1. 0 : all states
+   2. 1 : off state
+   3. 2 : on state
+   4. 1 to 256 for multistate buttons
+8. 'REFRESH_GUI' : resend and refresh the user interface names
 
 ----------------------------------------------------------------------------------------------------------------
 Please consider donating for more work and projects: [PayPal](<https://paypal.me/shinigamiboss?locale.x=en_US>

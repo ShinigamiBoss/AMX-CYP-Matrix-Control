@@ -200,7 +200,7 @@ DATA_EVENT[vdvMatrix]
 {
     ONLINE:
     {
-                
+        UpdateGUINames()   
     }
     OFFLINE: 
     {
@@ -254,7 +254,7 @@ DATA_EVENT[vdvMatrix]
             LOCAL_VAR  INTEGER Index
             REMOVE_STRING(CommandText,InNameSetCmd,1)
 
-            index = REMOVE_STRING(CommandText,',',1)
+            index = ATOI(REMOVE_STRING(CommandText,',',1))
             if(index > 0 and index <= 16)
             {
                 InNames[index] = CommandText
@@ -267,7 +267,7 @@ DATA_EVENT[vdvMatrix]
             LOCAL_VAR  INTEGER Index
             REMOVE_STRING(CommandText,OutNameSetCmd,1)
 
-            index = REMOVE_STRING(CommandText,',',1)
+            index = ATOI(REMOVE_STRING(CommandText,',',1))
             if(index > 0 and index <= 16)
             {
                 OutNames[index] = CommandText
@@ -280,7 +280,7 @@ DATA_EVENT[vdvMatrix]
             LOCAL_VAR INTEGER index
             REMOVE_STRING(CommandText,GuiInNameSetCmd,1)
 
-            index = REMOVE_STRING(CommandText,',',1)
+            index = ATOI(REMOVE_STRING(CommandText,',',1))
             if (index > 0 and index <=16)
             {
                 GuiInNames[index] = CommandText
@@ -289,12 +289,11 @@ DATA_EVENT[vdvMatrix]
         }
 
         //Set the GUI Output Names
-        if(FIND_STRING(CommandText,GuiInNameSetCmd,1))
+        if(FIND_STRING(CommandText,GuiOutNameSetCmd,1))
         {
             LOCAL_VAR INTEGER index
-            REMOVE_STRING(CommandText,GuiInNameSetCmd,1)
-
-            index = REMOVE_STRING(CommandText,',',1)
+            REMOVE_STRING(CommandText,GuiOutNameSetCmd,1)
+            index = ATOI(REMOVE_STRING(CommandText,',',1))
             if (index > 0 and index <=16)
             {
                 GuiOutNames[index] = CommandText
