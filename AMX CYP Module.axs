@@ -34,9 +34,6 @@ CHAR RefreshGUI[] = 'REFRESH_GUI'
 CHAR RouteZoneTel[] = 'ZoneAvPair '
 CHAR LoadTel[] = 'Load'
 
-//GUI Button channels
-INTEGER InBtn[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
-INTEGER OutBtn[] = {101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116} 
 
 //Constants
 INTEGER TelnetPort = 23
@@ -183,11 +180,9 @@ DEFINE_FUNCTION UpdateGUINames()
 {
     FOR (x = 1; x <= 16; x++)
     {
-        SEND_COMMAND vdvTP,"'^TXT-',ITOA(x),',',ITOA(GUIState),',',GuiInNames[x]" 
-    }
-    FOR (x = 101; x <= 116; x++)
-    {
-        SEND_COMMAND vdvTP,"'^TXT-',ITOA(x),',',ITOA(GUIState),',',GuiOutNames[x]" 
+        SEND_COMMAND vdvTP,"'^TXT-',ITOA(x),',',ITOA(GUIState),',',GuiInNames[x]"
+	
+	SEND_COMMAND vdvTP,"'^TXT-',ITOA(x + 100),',',ITOA(GUIState),',',GuiOutNames[x]" 
     }
 }
 
