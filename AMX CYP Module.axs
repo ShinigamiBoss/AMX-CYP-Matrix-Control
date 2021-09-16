@@ -1,7 +1,7 @@
-MODULE_NAME='AMX CYP Module' (DEV dvMatrix, DEV vdvTP)
+MODULE_NAME='AMX CYP Module' (DEV vdvMatrix, DEV dvMatrix, DEV vdvTP)
 (***********************************************************)
 (***********************************************************)
-(*  FILE_LAST_MODIFIED_ON: 04/04/2006  AT: 11:33:16        *)
+(*  FILE_LAST_MODIFIED_ON: 16/09/2021                      *)
 (***********************************************************)
 (* System Type : NetLinx                                   *)
 (***********************************************************)
@@ -121,7 +121,7 @@ DEFINE_FUNCTION RouteSignal (INTEGER in, INTEGER Out)
 (***********************************************************)
 DEFINE_EVENT
 
-DATA_EVENT[dvMatrix]
+DATA_EVENT[vdvMatrix]
 {
     ONLINE:
     {
