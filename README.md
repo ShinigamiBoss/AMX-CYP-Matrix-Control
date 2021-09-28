@@ -26,4 +26,4 @@ The module supports the following commands, the commands must be sent to the vir
 4. 'SET_OUT_NAME-INDEX,VALUE' : set the output names for routing purposes, INDEX: integer between 1 and 16, VALUE: the name to assign
 
 ----------------------------------------------------------------------------------------------------------------
-Please consider donating for more work and projects: [PayPal](<https://paypal.me/shinigamiboss?locale.x=en_US>
+Please consider donating for more work and projects: [PayPal](<https://paypal.me/shinigamiboss?locale.x=en_US>)
