@@ -22,17 +22,18 @@ DEFINE_CONSTANT
 
 //Commands variables
 CHAR IpSetCmd[] = 'IP_ADDRESS-'
-CHAR RouteCmd[] = 'ROUTE-'
+CHAR RouteCmd[] = 'ROUTE_HDBT-'
+CHAR ROuteHDMICmd[] = 'ROUTE_HDMI-'
 CHAR InNameSetCmd[] = 'SET_IN_NAME-'
 CHAR OutNameSetCmd[] = 'SET_OUT_NAME-'
-CHAR GuiInNameSetCmd[] = 'SET_GUI_IN_NAME-'
-CHAR GuiOutNameSetCmd[] = 'SET_GUI_OUT_NAME-'
-CHAR SetGUIStateCmd[] = 'GUI_STATES-'
-CHAR RefreshGUI[] = 'REFRESH_GUI'
 
 //Telnet Commands
 CHAR RouteZoneTel[] = 'ZoneAvPair '
+CHAR RouteHDMITel[] = 'HDMI_Out '
+CHAR HDMIInTel[] = 'HDMI_In'
 CHAR LoadTel[] = 'Load'
+CHAR VideoSourceTel[] = ' VideoSrc='
+
 
 
 //Constants
@@ -51,7 +52,7 @@ DEFINE_TYPE
 DEFINE_VARIABLE
 
 //Store IP Address
-CHAR MatrixIP[16] = '192.168.1.1'
+CHAR MatrixIP[16] = '128.0.8.13'
 
 PERSISTENT INTEGER GUIState = 1
 
@@ -65,15 +66,16 @@ PERSISTENT CHAR OutNames[16][256] = {
     {'HDBT_Out F'},
     {'HDBT_Out G'},
     {'HDBT_Out H'},
-    {'HDBT_Out I'},
+    {'HDMI_Out I'},
+    {'HDMI_Out J'},
+    {'HDBT_Out K'},
     {'HDBT_Out L'},
     {'HDBT_Out M'},
     {'HDBT_Out N'},
     {'HDBT_Out O'},
-    {'HDBT_Out P'},
-    {'HDBT_Out Q'},
-    {'HDBT_Out R'}
+    {'HDBT_Out P'}
 }
+
 
 //Route input names
 PERSISTENT CHAR InNames[16][256] = {
@@ -96,46 +98,8 @@ PERSISTENT CHAR InNames[16][256] = {
 
 }
 
-//Name sent to the User interface
-PERSISTENT CHAR GuiOutNames[16][256] = {
-    {'HDBT_Out A'},
-    {'HDBT_Out B'},
-    {'HDBT_Out C'},
-    {'HDBT_Out D'},
-    {'HDBT_Out E'},
-    {'HDBT_Out F'},
-    {'HDBT_Out G'},
-    {'HDBT_Out H'},
-    {'HDBT_Out I'},
-    {'HDBT_Out L'},
-    {'HDBT_Out M'},
-    {'HDBT_Out N'},
-    {'HDBT_Out O'},
-    {'HDBT_Out P'},
-    {'HDBT_Out Q'},
-    {'HDBT_Out R'}
-}
 
-//Name sent to the User interface
-PERSISTENT CHAR GuiInNames[16][256] = {
-    {'Slot 1'},
-    {'Slot 2'},
-    {'Slot 3'},
-    {'Slot 4'},
-    {'Slot 5'},
-    {'Slot 6'},
-    {'Slot 7'},
-    {'Slot 8'},
-    {'Slot 9'},
-    {'Slot 10'},
-    {'Slot 11'},
-    {'Slot 12'},
-    {'Slot 13'},
-    {'Slot 14'},
-    {'Slot 15'},
-    {'Slot 16'}
 
-}
 
 //Keep track of the network connection
 INTEGER ConnectionStatus = 0
@@ -163,7 +127,6 @@ DEFINE_MUTUALLY_EXCLUSIVE
 (***********************************************************)
 DEFINE_START
 
-
 DEFINE_FUNCTION RouteSignal (INTEGER in, INTEGER Out)
 {
     if (ConnectionStatus == 0)
@@ -174,6 +137,27 @@ DEFINE_FUNCTION RouteSignal (INTEGER in, INTEGER Out)
     WAIT 5
     {
         SEND_STRING dvMatrix,"RouteZoneTel, OutNames[Out],' ', InNames[In], ' ', LoadTel, Terminator "
+	WAIT 15
+	{
+	    SEND_STRING dvMatrix,"RouteZoneTel, OutNames[Out],' ', InNames[In], ' ', LoadTel, Terminator "
+	}
+    }
+}
+
+DEFINE_FUNCTION RouteHDMISignal (INTEGER in, INTEGER Out)
+{
+    if (ConnectionStatus == 0)
+    {
+        IP_CLIENT_OPEN(dvMatrix.PORT, MatrixIP, TelnetPort, IP_TCP)
+    }
+    
+    WAIT 5
+    {
+        SEND_STRING dvMatrix,"OutNames[Out], VideoSourceTel, HDMIInTel,' ',ITOA(in), 13,10 "
+	wait 15
+	{
+	    SEND_STRING dvMatrix,"OutNames[Out], VideoSourceTel, HDMIInTel,' ',ITOA(in), 13,10 "
+	}
     }
 }
 
@@ -318,6 +302,27 @@ DATA_EVENT[vdvMatrix]
             UpdateGUINames()
         }
         
+	if(FIND_STRING(CommandText,ROuteHDMICmd,1))
+	{
+	    
+	    LOCAL_VAR INTEGER in
+            LOCAL_VAR INTEGER out
+            LOCAL_VAR CHAR substr[256]
+
+            REMOVE_STRING(CommandText, ROuteHDMICmd, 1)
+
+            substr = REMOVE_STRING(CommandText, ',',1)
+
+            in = ATOI(substr)
+            out = ATOI(CommandText)
+            if (in > 0 and in <= 16)
+            {
+                if(out > 0 and out <= 16)
+                {
+                    RouteHDMISignal(in,out)
+                }
+            }
+	}
 
     }
 }
@@ -339,8 +344,6 @@ DATA_EVENT[dvMatrix]
     }
 }
 
-
-
 (*****************************************************************)
 (*                                                               *)
 (*                      !!!! WARNING !!!!                        *)
@@ -349,7 +352,7 @@ DATA_EVENT[dvMatrix]
 (* X-Series masters, changing variables in the DEFINE_PROGRAM    *)
 (* section of code can negatively impact program performance.    *)
 (*                                                               *)
-(* See â€œDifferences in DEFINE_PROGRAM Program Executionâ€ section *)
+(* See “Differences in DEFINE_PROGRAM Program Execution” section *)
 (* of the NX-Series Controllers WebConsole & Programming Guide   *)
 (* for additional and alternate coding methodologies.            *)
 (*****************************************************************)
